@@ -352,6 +352,9 @@ function string_format() {
 		return $args[0];
 	}
 	$str = array_shift($args);
-	$str = preg_replace_callback('/\\{(0|[1-9]\\d*)\\}/', create_function('$match', '$args = '.var_export($args, true).'; return isset($args[$match[1]]) ? $args[$match[1]] : $match[0];'), $str);
+	$str = preg_replace_callback('/\\{(0|[1-9]\\d*)\\}/', static function ($match) use ($args) {
+		$args = var_export($args, true);
+		return $args[$match[1]] ?? $match[0];
+	}, $str);
 	return $str;
 }

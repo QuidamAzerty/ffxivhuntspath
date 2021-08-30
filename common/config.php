@@ -5,32 +5,34 @@ class Config {
 	public static $con;
 
 	// Production
-  public static $domain = 'www.ffxivhuntspath.com';
-  public static $domain_cookie = '.ffxivhuntspath.com';
-  public static $context = '';
+//	public static $domain = 'www.ffxivhuntspath.com';
+//	public static $domain_cookie = '.ffxivhuntspath.com';
+//	public static $context = '';
+//
+//	public static $db_hostname = 'localhost';
+//	public static $db_username = 'ffxiv2_admin';
+//	public static $db_password = '';
+//	public static $db_table = 'ffxiv2';
+//	public static $db_port = 3305;
+//
+//	public static $cache_mode = 'memcached';
+	
+	// Dev
+	public static $domain = 'localhost:80/hunts';
+	public static $domain_cookie = 'localhost:80/hunts';
+	public static $context = '';
 	
 	public static $db_hostname = 'localhost';
 	public static $db_username = 'ffxiv2_admin';
 	public static $db_password = '';
 	public static $db_table = 'ffxiv2';
-	
-  public static $cache_mode = 'memcached';
-	
-	// Dev
-	/*
-  public static $domain = 'localhost:80/hunts';
-  public static $domain_cookie = 'localhost:80/hunts';
-  public static $context = '/hunts';
-	
-	public static $db_hostname = 'localhost';
-	public static $db_username = 'root';
-	public static $db_password = 'root';
-	public static $db_table = 'ffxiv2';
-	
-  public static $cache_mode = 'files';
-	*/
+	public static $db_port = 3305;
+
+	public static $cache_mode = 'files';
+
 	// Others
-  public static $cookie_game_lang = 'glang';
+
+	public static $cookie_game_lang = 'glang';
 	public static $cookie_web_lang = 'wlang';
 	public static $cookie_last_expansion = 'last_expansion';
 	public static $cookie_last_option = 'last_option';
@@ -41,16 +43,24 @@ class Config {
 	public static $precalculated_paths_shb = 'precalculated_paths_shb';
 	
 	public static function getDbConnection() {
-		if (!Config::$con || !Config::checkDbConnection(Config::$con)) {
-			if (Config::$con) {
-				mysqli_close(Config::$con);
+		if (!self::$con || !self::checkDbConnection(self::$con)) {
+			if (self::$con) {
+				mysqli_close(self::$con);
 			}
-			Config::$con = mysqli_connect(Config::$db_hostname, Config::$db_username, Config::$db_password, Config::$db_table) or die("Connection error with database server");
-			Config::$con->set_charset("utf8");
+
+			self::$con = mysqli_init();
+			self::$con->options(MYSQLI_SET_CHARSET_NAME, "utf8");
+			self::$con->connect(
+				self::$db_hostname,
+				self::$db_username,
+				self::$db_password,
+				self::$db_table,
+				self::$db_port
+			);
 			
-			return Config::$con;
+			return self::$con;
 		}
-		return Config::$con;
+		return self::$con;
 	}
 
 	public static function checkDbConnection($conn) {
